@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script>
+        function toggleEditProfile() {
+            var editProfileSection = document.getElementById("edit-profile-section");
+            editProfileSection.classList.toggle("hidden");
+        }
+    </script>
+</head>
+<body class="bg-gray-100">
+
+    <div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
+        <!-- Profile Picture -->
+        <div class="flex items-center space-x-4">
+            {% if user.profile_pic %}
+                <img src="{{ user.profile_pic.url }}" class="w-24 h-24 rounded-full bg-gray-200">
+            {% else %}
+                <div class="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
+                    <i class="fas fa-user text-4xl text-gray-500"></i>
+                </div>
+            {% endif %}
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">{{ user.name }}</h1>
+                <p class="text-xl text-gray-600">{{ user.email }}</p>
+                <p class="text-sm text-gray-500">Member since: <span class="text-gray-700">January 2023</span></p>
+            </div>
+        </div>
+
+        <!-- Profile Information -->
+        <div class="mt-8">
+            <h2 class="text-2xl font-semibold text-gray-800">Profile Information</h2>
+            <div class="mt-4 space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Name:</span>
+                    <span class="text-gray-800">{{ user.name }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Email:</span>
+                    <span class="text-gray-800">{{ user.email }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Address:</span>
+                    <span class="text-gray-800">{{ user.address }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Phone:</span>
+                    <span class="text-gray-800">{{ user.phone }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Button -->
+        <div class="mt-8 flex justify-between">
+            <button onclick="toggleEditProfile()" class="text-white bg-blue-500 hover:bg-blue-700 px-4 py-2 rounded-md text-sm font-semibold flex items-center">
+                <i class="fas fa-edit mr-2"></i> Edit Profile
+            </button>
+
+            <!-- Logout Button -->
+            <a href="/logout/" class="text-white bg-red-500 hover:bg-red-700 px-4 py-2 rounded-md text-sm font-semibold flex items-center">
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </a>
+        </div>
+
+        <!-- Edit Profile Section (Hidden by default) -->
+        <div id="edit-profile-section" class="hidden mt-8">
+            <h2 class="text-2xl font-semibold text-gray-800">Edit Profile</h2>
+            <form method="POST" class="mt-8 space-y-6" action="/editprofile/" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Name Input -->
+                <div>
+                    <label for="name" class="block text-sm font-semibold text-gray-600">Name</label>
+                    <input type="text" id="name" name="name" value="{{ user.name }}" class="mt-2 block w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                </div>
+
+                <!-- Phone Input -->
+                <div class="mt-4">
+                    <label for="phone" class="block text-sm font-semibold text-gray-600">Phone</label>
+                    <input type="tel" id="phone" name="phone" value="{{ user.phone }}" class="mt-2 block w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                </div>
+
+                <!-- Address Input -->
+                <div class="mt-4">
+                    <label for="location" class="block text-sm font-semibold text-gray-600">Address</label>
+                    <input type="text" id="location" name="location" value="{{ user.address }}" class="mt-2 block w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                </div>
+
+                <!-- Profile Picture Input -->
+                <div class="mt-4">
+                    <label for="profile_pic" class="block text-sm font-semibold text-gray-600">Profile Picture</label>
+                    <input type="file" id="profile_pic" name="profile_pic" class="mt-2 block w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+
+                <!-- Save Changes Button -->
+                <div class="mt-8 flex justify-center">
+                    <button type="submit" class="text-white bg-blue-500 hover:bg-blue-700 px-6 py-3 rounded-md text-sm font-semibold flex items-center">
+                        <i class="fas fa-save mr-2"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+
+            <!-- Cancel Button -->
+            <div class="mt-4 text-center">
+                <a href="{% url 'profile' %}" class="text-blue-500 hover:text-blue-700 text-sm font-semibold">
+                    <i class="fas fa-times-circle mr-2"></i> Cancel
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

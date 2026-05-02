@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adopt a Pet</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- Header -->
+    <header class="bg-green-600 text-white p-4">
+        <div class="container mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <div class="text-2xl font-semibold">
+                <a href="/" class="flex items-center">
+                    <i class="fas fa-paw mr-2"></i> <span>Adopt a Pet</span>
+                </a>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="/home/" class="hover:text-green-300">Home</a></li>
+                    <li><a href="/home/" class="hover:text-green-300">About</a></li>
+                    <li><a href="/cart/" class="hover:text-green-300">View Cart</a></li>
+                </ul>
+            </nav>
+
+            <!-- Search Bar -->
+            <div class="flex items-center space-x-2">
+                <!-- Search icon near the cart -->
+                <button id="search-icon" class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600" onclick="toggleSearchBar()">
+                    <i class="fas fa-search"></i>
+                </button>
+
+                <input type="text" id="search-input" onkeyup="searchPets()" placeholder="Search for pets..." class="p-2 rounded-md border-none focus:ring-2 focus:ring-green-500 hidden bg-white text-black">
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-6">
+        <!-- Page Title -->
+        <div class="flex items-center justify-between mb-6">
+            
+        </div>
+
+        <!-- No Results Message -->
+        <div id="no-results-message" class="hidden text-center text-gray-500 mt-4">
+            <p>No results found for your search.</p>
+        </div>
+
+        <!-- Pet List Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="pet-list">
+            {% for pet in pet %}
+            <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 pet-item" data-name="{{ pet.catname | lower }}" data-breed="{{ pet.breedname | lower }}" data-description="{{ pet.description | lower }}">
+                <div class="flex justify-center mb-4">
+                    <!-- Pet Image -->
+                    <img src="{{ pet.cat_pic.url }}" alt="{{ pet.catname }}" class="w-32 h-32 object-cover rounded-full">
+                </div>
+                <div class="text-center">
+                    <!-- Pet Name -->
+                    <h3 class="text-xl font-semibold text-gray-800">{{ pet.catname }}</h3>
+                    <p class="text-gray-600 mb-2">{{ pet.breedname }}</p>
+                    <p class="text-gray-600 mb-2">Price: ₹{{ pet.price }}</p>
+                    <p class="text-gray-500 mb-4">Age: {{ pet.age }} years</p>
+
+                    <!-- Pet Description with "See More" -->
+                    <p class="text-sm text-gray-600 mb-4" id="description-{{ pet.id }}">
+                        {{ pet.description|slice:":80" }}...
+                        <a href="javascript:void(0)" onclick="toggleDescription({{ pet.id }})" class="text-blue-500">See More</a>
+                    </p>
+
+                    <div id="full-description-{{ pet.id }}" class="hidden text-sm text-gray-600 mb-4">
+                        {{ pet.description }}
+                        <a href="javascript:void(0)" onclick="toggleDescription({{ pet.id }})" class="text-blue-500">See Less</a>
+                    </div>
+                </div>
+
+                <!-- Adopt Button -->
+                <div class="flex justify-center mt-4">
+                    <a href="{% url 'checkout' pet.id %}" class="bg-green-500 text-white p-3 rounded-md hover:bg-green-600 focus:outline-none flex items-center justify-center">
+                        <i class="fas fa-paw mr-2"></i> Buy
+                    </a>
+                </div>
+                <div class="flex justify-center mt-4">
+                    <a href="{% url 'add_to_petcart' pet.id %}" class="bg-green-500 text-white p-3 rounded-md hover:bg-green-600 focus:outline-none flex items-center justify-center">
+                        <i class="fas fa-paw mr-2"></i> add to cart
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center text-gray-500">
+                <p>No pets available for adoption.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // Toggle description visibility
+        function toggleDescription(petId) {
+            const shortDesc = document.getElementById(`description-${petId}`);
+            const fullDesc = document.getElementById(`full-description-${petId}`);
+
+            if (shortDesc.classList.contains('hidden')) {
+                shortDesc.classList.remove('hidden');
+                fullDesc.classList.add('hidden');
+            } else {
+                shortDesc.classList.add('hidden');
+                fullDesc.classList.remove('hidden');
+            }
+        }
+
+        // Search functionality
+        function searchPets() {
+            const searchQuery = document.getElementById('search-input').value.toLowerCase();
+            const petItems = document.querySelectorAll('.pet-item');
+            let hasResults = false;
+
+            petItems.forEach((pet) => {
+                const petName = pet.getAttribute('data-name');
+                const petBreed = pet.getAttribute('data-breed');
+                const petDescription = pet.getAttribute('data-description');
+
+                if (petName.includes(searchQuery) || petBreed.includes(searchQuery) || petDescription.includes(searchQuery)) {
+                    pet.style.display = '';
+                    hasResults = true;
+                } else {
+                    pet.style.display = 'none';
+                }
+            });
+
+            // Toggle no results message
+            const noResultsMessage = document.getElementById('no-results-message');
+            if (hasResults) {
+                noResultsMessage.classList.add('hidden');
+            } else {
+                noResultsMessage.classList.remove('hidden');
+            }
+        }
+
+        // Toggle search bar visibility
+        function toggleSearchBar() {
+            const searchBar = document.getElementById('search-input');
+            searchBar.classList.toggle('hidden');
+            searchBar.focus();
+        }
+    </script>
+
+</body>
+
+</html>

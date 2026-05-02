@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>animals and pets - free CSS layout</title>
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <link href="{% static 'templatemo_style.css' %}" rel="stylesheet" type="text/css" />
+  <!-- Add your custom styles for the gallery here -->
+  <style>
+    /* Image Gallery Section */
+    #templatemo_image_gallery {
+      margin-top: 30px;
+      background-color: #fff; /* White background for the gallery */
+      padding: 20px; /* Add padding to make it look like a box */
+      border-radius: 8px; /* Optional: rounded corners */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Optional: box shadow for better definition */
+    }
+
+    .templatemo_gallery_grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* Three images per row */
+      gap: 20px;
+      padding: 20px;
+      margin-top: 20px; /* Add some space above the gallery */
+    }
+
+    .templatemo_gallery_item {
+      overflow: hidden;
+      position: relative;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background-color: #fff;
+    }
+
+    .templatemo_gallery_item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Makes images cover the entire item container */
+      display: block;
+      border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+
+    .templatemo_gallery_item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .templatemo_gallery_item img:hover {
+      transform: scale(1.1);
+    }
+
+    /* Responsive layout for smaller screens */
+    @media (max-width: 768px) {
+      .templatemo_gallery_grid {
+        grid-template-columns: repeat(1, 1fr); /* Only one image per row on smaller screens */
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="templatemo_container">
+    <div id="templatemo_topsection">
+      <div id="templatemo_topsection_title">ANIMALS &amp; PETS</div>
+      <div class="templatemo_topmenu">
+        <ul>
+          <li><a href="/index/" class="current">HOME</a></li>
+          <li><a href="/sellerprofile/">PROFILE</a></li>
+          <li><a href="/petlist/">PETS</a></li>
+          <li><a href="/productlist/">PRODUCTS</a></li>
+          <li><a href="/classify/">FIND BREED</a></li>
+          
+        </ul>
+      </div>
+    </div>
+
+    <div id="templatemo_left_column">
+      <div id="templatemo_left_top"></div>
+      <div class="button"><a href="/chatbot/">Chat With Our Bot</a></div>
+        <div class="button"><a href="/classify/">FIND BREED</a></div>
+      <div class="button">WHY YOU NEED A CAT</div>
+      <div class="templatemo_leftmenu">
+        <ul>
+          <li><a href="#">» Because they purr away your stress</a></li><br>
+          <li><a href="#">» They’re the best companions for quiet moments</a></li><br>
+          <li><a href="#">» They teach responsibility and empathy.</a></li><br>
+          <li><a href="#">» A cat’s presence can reduce anxiety and loneliness.</a></li><br>
+          <li><a href="#">» Their soothing gaze brings peace to your home.</a></li><br>
+          <li><a href="#">» They bring joy and love to your life</a></li><br>
+          <li><a href="#">» They help keep pests away naturally</a></li><br>
+          <li><a href="#">» Cats are low-maintenance pets</a></li><br>
+        </ul>
+        <div class="button">CARING TIPS</div>
+        <div class="templatemo_leftmenu">
+          <ul>
+            <li><a href="#">» Always provide clean, fresh water for your cat.</a></li><br>
+            <li><a href="#">» Feed your cat nutritious, high-quality food.</a></li><br>
+            <li><a href="#">» Clean the litter box daily to maintain hygiene.</a></li><br>
+            <li><a href="#">» Schedule regular check-ups and vaccinations.</a></li><br>
+            <li><a href="#">» Brush your cat’s coat regularly, especially long-haired breeds.</a></li><br>
+            <li><a href="#">» Ensure your cat has a quiet, secure area for resting.</a></li><br>
+            <li><a href="#">» Use toys and scratching posts to keep your cat active.</a></li><br>
+            <li><a href="#">» Let your cat approach affection on their terms.</a></li><br>
+            <li><a href="#">» Clean your cat’s teeth or offer dental treats.</a></li><br>
+            <li><a href="#">» Keep your cat indoors to protect them from dangers.</a></li><br>
+          </ul>
+        </div>  
+        <div><ul><li><p style="color: darkgreen;"><i>Need more tips? <br>Our chatbot is here to assist you<br>with all things cat-related!</i></b></p></ul></li></div>
+        <div class="button"><a href="/chatbot/">Chat With Our Bot</a></div>
+        <div class="button"><a href="/classify/">FIND BREED</a></div>
+      </div>
+    </div>
+      
+    
+
+    <div id="templatemo_right_column">
+      <div id="templatemo_right_top"></div>
+      <div id="templatemo_right_mid">
+        <h1>WELCOME TO OUR APP....</h1>
+        <p><img src="{% static 'images/templatemo_photo1.jpg' %}" alt="" width="139" height="137" /></p>
+        <p>Welcome to our Cat Breed App! This app is your ultimate resource for discovering and marketing the wonderful world of cats. Whether you're a breeder, a pet enthusiast, or simply looking to identify a cat breed, we’ve got you covered. With easy-to-use tools for identifying cat breeds and showcasing your feline companions, this app helps you connect with the right audience and share the beauty of each unique cat breed. Explore, learn, and market with confidence as you dive into the diverse world of cats!</p>
+        <h2>ABOUT US</h2>
+        <p>Our app connects breeders with potential cat owners, offering a comprehensive guide to cat breeds, an easy-to-use marketplace, and helpful resources to ensure your feline companion’s well-being. Whether you're a breeder looking to showcase your cats or someone exploring different breeds, we’ve got you covered.<br>
+          * Breed Identification: Discover and learn about various cat breeds.<br>
+          * Marketplace for Breeders: List your kittens and connect with potential owners.<br>
+          * Community: Share experiences and connect with other cat enthusiasts.<br><br><br>
+          At -This app-, we’re passionate about cats and dedicated to bringing people closer to the feline world. Explore, learn, and find your perfect cat today!
+        </p>
+
+        <!-- Merged Image Gallery Section -->
+        <div id="templatemo_image_gallery" class="templatemo_right_mid">
+          <h1 style="background-color:white; padding: 10px 20px; border-radius: 8px; text-align: center; font-size: 24px; font-weight: bold; margin: 0;">
+            Image Gallery
+          </h1>
+
+          <div class="templatemo_gallery_grid">
+            <div class="templatemo_gallery_item">
+              <img src="{% static 'images/cat1.jpg' %}" alt="Cat 1" />
+            </div>
+            <div class="templatemo_gallery_item">
+              <img src="{% static 'images/cat2.jpg' %}" alt="Cat 2" />
+            </div>
+            <div class="templatemo_gallery_item">
+              <img src="{% static 'images/cat3.jpg' %}" alt="Cat 3" />
+            </div>
+            <div class="templatemo_gallery_item">
+              <img src="{% static 'images/cat4.jpg' %}" alt="Cat 4" />
+            </div>
+            <div class="templatemo_gallery_item">
+              <img src="{% static 'images/cat5.jpg' %}" alt="Cat 5" />
+            </div>
+            <div class="templatemo_gallery_item">
+              <img src="{% static 'images/cat6.jpg' %}" alt="Cat 6" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="text-center mt-8">
+      <p class="text-gray-600">This version is concise while still highlighting key features and the mission of the app.</p>
+    </div>
+  </div>
+
+</body>
+
+</html>

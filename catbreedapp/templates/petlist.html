@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet List - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <!-- Main Content -->
+    <div class="container mx-auto p-6">
+        <!-- Page Title -->
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-3xl font-semibold text-gray-800">Pet List</h2>
+            <a href="{% url 'petadd' %}" class="bg-green-500 text-white p-3 rounded-md hover:bg-gra-600">
+                <i class="fas fa-plus mr-2"></i> Add New Pet
+            </a>
+        </div>
+
+        <!-- Pet List Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for pet in pet %}
+            <div class="bg-white p-12 rounded-lg shadow-lg relative">
+                <div class="flex justify-center mb-4">
+                    <img src="{{ pet.cat_pic.url }}" alt="{{ pet.catname }}" class="w-32 h-32 object-cover rounded-full">
+                </div>
+                <div class="text-center">
+                    <h3 class="text-xl font-semibold text-gray-800">{{ pet.catname }}</h3>
+                    <p class="text-gray-600 mb-2">Breed: {{ pet.breedname }}</p>
+                    <p class="text-gray-600 mb-2">Price: ₹{{ pet.price }}</p>
+                    <p class="text-gray-500 mb-4">Age: {{ pet.age }} years</p>
+
+                    <!-- Pet Description with "See More" Link -->
+                    <p class="text-sm text-gray-600 mb-4" id="short-description-{{ pet.id }}">
+                        {{ pet.description|slice:":80" }}...
+                        <a href="javascript:void(0)" onclick="toggleDescription({{ pet.id }})" class="text-blue-500">See More</a>
+                    </p>
+
+                    <div id="full-description-{{ pet.id }}" class="hidden text-sm text-gray-600 mb-4">
+                        {{ pet.description }}
+                        <a href="javascript:void(0)" onclick="toggleDescription({{ pet.id }})" class="text-blue-500">See Less</a>
+                    </div>
+                </div>
+
+                <!-- Actions (Edit, Delete) -->
+                <div class="flex justify-around mt-4">
+                    <button onclick="showEditForm({{ pet.id }})" class="text-yellow-500 hover:text-yellow-600">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <a href="{% url 'deletepet' pet.id %}" class="text-red-500 hover:text-red-600">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </a>
+                </div>
+
+                <!-- Edit Form (Initially hidden) -->
+                <div id="edit-form-{{ pet.id }}" class="absolute inset-0 bg-green-800 bg-opacity-50 flex justify-center items-center hidden">
+                    <div class="bg-white p-4 rounded-lg shadow-lg w-full sm:w-80 max-w-xs">
+                        <h3 class="text-green-600 text-2xl font-bold mb-2">Edit Pet</h3>
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'editpet' pet.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="id" value="{{ pet.id }}">
+
+                            <!-- Compact Fields -->
+                            <div class="space-y-2">
+                                <label for="catname" class="block text-gray-700 text-sm">Cat Name:</label>
+                                <input type="text" name="catname" value="{{ pet.catname }}" class="w-full p-1 border rounded-md" required>
+
+                                <label for="breedname" class="block text-gray-700 text-sm">Breed:</label>
+                                <input type="text" name="petname" value="{{ pet.breedname }}" class="w-full p-1 border rounded-md" required>
+
+                                <label for="price" class="block text-gray-700 text-sm">Price:</label>
+                                <input type="number" name="price" value="{{ pet.price }}" class="w-full p-1 border rounded-md" required>
+
+                                <label for="age" class="block text-gray-700 text-sm">Age (years):</label>
+                                <input type="number" name="age" value="{{ pet.age }}" class="w-full p-1 border rounded-md" required>
+
+                                <label for="description" class="block text-gray-700 text-sm">Description:</label>
+                                <textarea name="description" class="w-full p-1 border rounded-md" required>{{ pet.description }}</textarea>
+
+                                <label for="cat_pic" class="block text-gray-700 text-sm">Pet Picture:</label>
+                                <input type="file" name="cat_pic" class="w-full p-1 border rounded-md">
+
+                                <div class="flex justify-between mt-4">
+                                    <button type="submit" class="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600">Update</button>
+                                    <button type="button" onclick="hideEditForm({{ pet.id }})" class="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600">Cancel</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center text-gray-500">
+                <p>No pets available.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // Toggle between showing short and full description
+        function toggleDescription(petId) {
+            const shortDesc = document.getElementById('short-description-' + petId);
+            const fullDesc = document.getElementById('full-description-' + petId);
+
+            if (shortDesc.classList.contains('hidden')) {
+                shortDesc.classList.remove('hidden');
+                fullDesc.classList.add('hidden');
+            } else {
+                shortDesc.classList.add('hidden');
+                fullDesc.classList.remove('hidden');
+            }
+        }
+
+        // Show the edit form when the Edit button is clicked
+        function showEditForm(petId) {
+            document.getElementById('edit-form-' + petId).classList.remove('hidden');
+        }
+
+        // Hide the edit form when Cancel button is clicked
+        function hideEditForm(petId) {
+            document.getElementById('edit-form-' + petId).classList.add('hidden');
+        }
+    </script>
+</body>
+
+</html>

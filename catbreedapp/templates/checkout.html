@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .checkout-container {
+            margin: 0 auto;
+            width: 80%;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .cart-items {
+            margin: 20px 0;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .total-price {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: right;
+        }
+        .razorpay-button {
+            background-color: #3db44e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        .razorpay-button:hover {
+            background-color: #2a8d37;
+        }
+    </style>
+</head>
+<body>
+
+<div class="checkout-container">
+    <h1>Checkout</h1>
+
+    <!-- Cart Items -->
+    <div class="cart-items">
+        {% for item in cart_items %}
+            <div class="cart-item">
+                <span>{{ item.name }}</span>
+                <span>₹{{ item.price }}</span>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Total Price -->
+    <div class="total-price">
+        <p>Total: ₹{{ total_price }}</p>
+    </div>
+
+    <!-- Razorpay Payment Button -->
+    <button class="razorpay-button" id="pay-button">Pay Now</button>
+</div>
+
+<script>
+    var options = {
+        "key": "{{ settings.RAZOR_KEY_ID }}", // Your Razorpay Key ID
+        "amount": "{{ razorpay_amount }}", // Amount in paisa
+        "currency": "INR",
+        "order_id": "{{ razorpay_order_id }}", // Razorpay Order ID
+        "handler": function (response) {
+            // Send the payment details to the server for verification
+            fetch("{% url 'userpetlist' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_signature: response.razorpay_signature
+                })
+            }).then(function(response) {
+                return response.json();
+            }).then(function(data) {
+                if (data.status == 'success') {
+                    alert('Payment Successful!');
+                    
+                    // Redirect after 3 seconds
+                    setTimeout(function() {
+                        window.location.href = "/home/";  // Redirect to the home page after 3 seconds
+                    }, 3000);  // 3000ms = 3 seconds
+                } else {
+                    alert('Payment Failed!');
+                }
+            });
+        },
+        "prefill": {
+            "email": "{{ user.email }}",
+            "contact": "{{ user.phone_number }}"
+        },
+        "theme": {
+            "color": "#F37254"
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+    
+    document.getElementById('pay-button').onclick = function(e) {
+        rzp1.open();
+        e.preventDefault();
+    };
+</script>
+
+</body>
+</html>

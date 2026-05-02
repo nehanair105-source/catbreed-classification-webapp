@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller List</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <!-- JavaScript for Modal -->
+    <script>
+        // Function to open the modal by removing the 'hidden' class
+        function openModal(sellerId) {
+            const modal = document.getElementById('modal_' + sellerId);
+            modal.classList.remove('hidden');
+        }
+
+        // Function to close the modal by adding the 'hidden' class
+        function closeModal(sellerId) {
+            const modal = document.getElementById('modal_' + sellerId);
+            modal.classList.add('hidden');
+        }
+    </script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-600 p-4">
+        <div class="container mx-auto flex items-center justify-between">
+            <a href="#" class="text-white text-2xl font-bold">MyApp</a>
+            <div>
+                <a href="/adhome/" class="text-white text-lg mx-4">Home</a>
+                <a href="#" class="text-white text-lg mx-4">About</a>
+                <a href="#" class="text-white text-lg mx-4">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-700">Seller List</h1>
+        
+        <!-- Seller List Table -->
+        <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+            <table class="w-full table-auto">
+                <thead>
+                    <tr class="bg-blue-600 text-white">
+                        <th class="px-4 py-2 text-left">Profile</th>
+                        <th class="px-4 py-2 text-left">Name</th>
+                        <th class="px-4 py-2 text-left">Shop Name</th>
+                        <th class="px-4 py-2 text-left">Email</th>
+                        <th class="px-4 py-2 text-left">Phone</th>
+                        <th class="px-4 py-2 text-left">Location</th>
+                        <th class="px-4 py-2 text-left">Last Login</th>
+                        <th class="px-4 py-2 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for seller in users %}
+                        <tr class="border-b hover:bg-gray-100">
+                            <!-- Profile Pic -->
+                            <td class="px-4 py-2">
+                                {% if seller.profile_pic %}
+                                    <img src="{{ seller.profile_pic.url }}" alt="Profile Picture" class="w-12 h-12 rounded-full">
+                                {% else %}
+                                    <i class="fas fa-user-circle text-gray-600 text-3xl"></i>
+                                {% endif %}
+                            </td>
+                            <!-- Name -->
+                            <td class="px-4 py-2">{{ seller.name }}</td>
+                            <!-- Shop Name -->
+                            <td class="px-4 py-2">{{ seller.shopname }}</td>
+                            <!-- Email -->
+                            <td class="px-4 py-2">{{ seller.email }}</td>
+                            <!-- Phone -->
+                            <td class="px-4 py-2">{{ seller.phone }}</td>
+                            <!-- Location -->
+                            <td class="px-4 py-2">{{ seller.location }}</td>
+                            <td class="px-4 py-2">
+                                {% if seller.last_login %}
+                                    {{ seller.last_login|date:"F j, Y, g:i a" }} <!-- Format the date -->
+                                {% else %}
+                                    No login data
+                                {% endif %}
+                            </td>
+                            <!-- Actions -->
+                            <td class="px-4 py-2 text-blue-600">
+                                <!-- View Details Button -->
+                                <button onclick="openModal({{ seller.id }})" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+
+                                <a href="{% url 'deleteseller' seller.id %}" class="hover:text-red-600">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Modal for seller details -->
+                        <div id="modal_{{ seller.id }}" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center hidden">
+                            <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+                                <button onclick="closeModal({{ seller.id }})" class="absolute top-2 right-2 text-gray-600">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <h2 class="text-2xl font-semibold mb-4">Seller Details: {{ seller.name }}</h2>
+                                <p><strong>Shop Name:</strong> {{ seller.shopname }}</p>
+                                <p><strong>Email:</strong> {{ seller.email }}</p>
+                                <p><strong>Phone:</strong> {{ seller.phone }}</p>
+                                <p><strong>Location:</strong> {{ seller.location }}</p>
+
+                                <h3 class="mt-6 text-xl font-semibold">Products</h3>
+                                <ul class="space-y-2">
+                                    {% for product in seller.product %}
+                                        <li class="border-b py-2">{{ product.productname }} - ₹{{ product.price }}</li>
+                                    {% empty %}
+                                        <li>No products found</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">No sellers found</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 p-4 text-center text-white">
+        <p>&copy; 2024 MyApp. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>

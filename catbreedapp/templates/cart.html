@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+    <!-- Header -->
+    <header class="bg-blue-600 text-white py-4">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold">Your Shopping Cart</h1>
+            <nav>
+                <ul class="flex space-x-4">
+                    {% comment %} <li><a href="/userpetlist/" class="hover:text-gray-200">Go Back</a></li> {% endcomment %}
+                    {% comment %} <li><a href="/cart" class="hover:text-gray-200">Cart</a></li> {% endcomment %}
+                    {% comment %} <li><a href="/checkout" class="hover:text-gray-200">Checkout</a></li> {% endcomment %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="py-12 px-4"> 
+        <div class="max-w-7xl mx-auto">
+            <section class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6">Products in Your Cart</h2>
+                
+                <!-- Regular Products -->
+                {% if cart %}
+                    <h3 class="text-xl font-semibold mb-4">Regular Products</h3>
+                    <ul class="space-y-4">
+                        {% for item in cart %}
+                            <li class="flex justify-between items-center p-4 border border-gray-200 rounded-lg">
+                                <div class="flex items-center space-x-4">
+                                    <!-- Product Image -->
+                                    {% if item.product.product_pic %}
+                                        <img src="{{ item.product.product_pic.url }}" alt="{{ item.product.productname }}" class="w-24 h-24 object-cover rounded-lg">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/150" alt="No Image Available" class="w-24 h-24 object-cover rounded-lg">
+                                    {% endif %}
+                                    
+                                    <!-- Product Details -->
+                                    <div>
+                                        <p class="font-medium">{{ item.product.productname }}</p>
+                                        <p>Price: ₹{{ item.product.price }}</p>
+                                        <p>Type: {{ item.product.type }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-4">
+                                    <!-- Remove Button -->
+                                    <button class="text-red-600 hover:text-red-800"><a href="{% url 'delete_cart' item.id %}" class="hover:text-gray-200">Remove</a></button>
+                                    <!-- Buy Button -->
+                                    <a href="{% url 'checkout1' item.id %}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center space-x-2">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <span>Buy</span>
+                                    </a>
+                                    
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Your cart is empty.</p>
+                {% endif %}
+
+                <!-- Pet Products -->
+                <h3 class="text-xl font-semibold mt-6 mb-4">Pets in Your Cart</h3>
+                {% if petcart %}
+                    <ul class="space-y-4">
+                        {% for pet in petcart %}
+                            <li class="flex justify-between items-center p-4 border border-gray-200 rounded-lg">
+                                <div class="flex items-center space-x-4">
+                                    <!-- Pet Image -->
+                                    {% if pet.pet.cat_pic %}
+                                        <img src="{{ pet.pet.cat_pic.url }}" alt="{{ pet.pet.catname }}" class="w-24 h-24 object-cover rounded-lg">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/150" alt="No Image Available" class="w-24 h-24 object-cover rounded-lg">
+                                    {% endif %}
+                                  
+                                    <!-- Pet Details -->
+                                    <div>
+                                        <p class="font-medium">{{ pet.pet.catname }}</p>
+                                        <p>Price: ₹{{ pet.pet.price }}</p>
+                                        <p>Breed: {{ pet.pet.breedname }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-4">
+                                    <!-- Remove Button -->
+                                    <button class="text-red-600 hover:text-red-800"><a href="{% url 'delete_cart' pet.id %}" class="hover:text-gray-200">Remove</a></button>
+                                    <!-- Buy Button -->
+                                    <a href="{% url 'checkout' pet.id %}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center space-x-2">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <span>Buy</span>
+                                    </a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Your pet cart is empty.</p>
+                {% endif %}
+
+                <!-- Total Price -->
+                <div class="mt-8 flex justify-between items-center">
+                    <h3 class="text-xl font-semibold">Total Price:</h3>
+                    <p class="text-xl font-bold">₹{{ total_price }}</p>
+                </div>
+
+                <!-- Checkout Buttons -->
+                <div class="mt-6 flex justify-between">
+                    <a href="/checkout/" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Proceed to Product Checkout</a>
+                    <a href="/checkout1/" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Proceed to Pet Checkout</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <p>&copy; 2025 Your Store</p>
+        </div>
+    </footer>
+
+</body>
+</html>

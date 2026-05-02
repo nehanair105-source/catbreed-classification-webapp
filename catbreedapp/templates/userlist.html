@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <script>
+        // Function to open the modal
+        function openModal(userId) {
+            document.getElementById('modal-' + userId).classList.remove('hidden');
+        }
+
+        // Function to close the modal
+        function closeModal(userId) {
+            document.getElementById('modal-' + userId).classList.add('hidden');
+        }
+    </script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-600 p-4">
+        <div class="container mx-auto flex items-center justify-between">
+            <a href="#" class="text-white text-2xl font-bold">MyApp</a>
+            <div>
+                <a href="/adhome/" class="text-white text-lg mx-4">Home</a>
+                <a href="#" class="text-white text-lg mx-4">About</a>
+                <a href="#" class="text-white text-lg mx-4">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-700">User List</h1>
+        
+        <!-- User List Table -->
+        <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+            <table class="w-full table-auto">
+                <thead>
+                    <tr class="bg-blue-600 text-white">
+                        <th class="px-4 py-2 text-left">Profile</th>
+                        <th class="px-4 py-2 text-left">Name</th>
+                        <th class="px-4 py-2 text-left">Email</th>
+                        <th class="px-4 py-2 text-left">Phone</th>
+                        <th class="px-4 py-2 text-left">Address</th>
+                        <th class="px-4 py-2 text-left">Last Login</th> 
+                        <th class="px-4 py-2 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                        <tr class="border-b hover:bg-gray-100">
+                            <!-- Profile Pic -->
+                            <td class="px-4 py-2">
+                                {% if u.profile_pic %}
+                                    <img src="{{ u.profile_pic.url }}" alt="Profile Picture" class="w-12 h-12 rounded-full">
+                                {% else %}
+                                    <i class="fas fa-user-circle text-gray-600 text-3xl"></i>
+                                {% endif %}
+                            </td>
+                            <!-- Name -->
+                            <td class="px-4 py-2">{{ u.name }}</td>
+                            <!-- Email -->
+                            <td class="px-4 py-2">{{ u.email }}</td>
+                            <!-- Phone -->
+                            <td class="px-4 py-2">{{ u.phone }}</td>
+                            <!-- Address -->
+                            <td class="px-4 py-2">{{ u.address }}</td>
+                            <td class="px-4 py-2">
+                                {% if u.last_login %}
+                                    {{ u.last_login|date:"F j, Y, g:i a" }} <!-- Format the date -->
+                                {% else %}
+                                    No login data
+                                {% endif %}
+                            </td>
+                            <!-- Actions -->
+                            <td class="px-4 py-2 text-blue-600">
+                                <!-- View Details Button -->
+                                <button onclick="openModal({{ u.id }})" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                                <!-- Delete Link -->
+                                <a href="{% url 'deleteuser' u.id %}" class="hover:text-red-600">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">No users found</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 p-4 text-center text-white">
+        <p>&copy; 2024 MyApp. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Modals for Each User's Details -->
+    {% for u in users %}
+        <div id="modal-{{ u.id }}" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+            <div class="bg-white rounded-lg w-96 p-6 relative">
+                <button onclick="closeModal({{ u.id }})" class="absolute top-2 right-2 text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h2 class="text-2xl font-bold mb-4">User Details: {{ u.name }}</h2>
+                <p><strong>Email:</strong> {{ u.email }}</p>
+                <p><strong>Phone:</strong> {{ u.phone }}</p>
+                <p><strong>Address:</strong> {{ u.address }}</p>
+
+                <h3 class="mt-4 text-xl">products</h3>
+                <ul>
+                    {% if u.cart %}
+                        {% for cart in u.cart %}
+                            <li> Product: {{ cart.product.productname }} - Date: {{ cart.created_at }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li>No products available</li>
+                    {% endif %}
+                    <br>
+                    <h3 class="mt-4 text-xl">pets</h3>
+                    {% if u.petcart %}
+                        {% for cart in u.petcart %}
+                            <li> Product: {{ cart.pet.catname }}  - breed: {{ cart.pet.breedname }} - Price: {{ cart.pet.price }} - Date: {{ cart.created_at }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li>No products available</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    {% endfor %}
+
+</body>
+</html>

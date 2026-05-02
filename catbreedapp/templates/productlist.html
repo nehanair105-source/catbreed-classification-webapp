@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product List</title>
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body class="bg-gray-50 font-sans">
+
+  <!-- Header Section -->
+  <header class="bg-green-700 text-white py-6">
+    <div class="container mx-auto text-center">
+      <h1 class="text-4xl font-extrabold tracking-tight">
+        <i class="fas fa-box-open mr-3"></i> Product List
+      </h1>
+      <p class="mt-2 text-lg">Explore our amazing products</p>
+    </div>
+    <div>
+        <a href="{% url 'productadd' %}" class="bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600">
+            <i class="fas fa-plus mr-2"></i> Add New Product
+        </a>
+    </div>
+  </header>
+
+  <!-- Product List Section -->
+  <section class="container mx-auto p-8">
+    <!-- Check if products exist -->
+    {% if product %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      <!-- Loop through products and display them -->
+      {% for item in product %}
+      <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
+        <!-- Product Image -->
+        <div class="flex justify-center mb-4">
+          {% if item.product_pic %}
+          <img src="{{ item.product_pic.url }}" alt="{{ item.productname }}" class="w-full h-52 object-cover rounded-lg">
+          {% else %}
+          <img src="https://via.placeholder.com/300x200" alt="No Image Available" class="w-full h-52 object-cover rounded-lg">
+          {% endif %}
+        </div>
+
+        <!-- Product Details -->
+        <div class="text-center">
+          <h2 class="text-xl font-semibold text-gray-800">{{ item.productname }}</h2>
+          <p class="text-sm text-gray-600">{{ item.type }}</p>
+          <p class="text-lg font-bold text-indigo-600 mt-2">₹{{ item.price }}</p>
+
+          <!-- Description -->
+          <p class="text-gray-700 text-sm mt-2" id="description-{{ item.id }}">
+            {{ item.description|slice:":100" }}{% if item.description|length > 100 %}... <a href="javascript:void(0)" onclick="toggleDescription({{ item.id }})" class="text-blue-500" id="toggle-link-{{ item.id }}">See More</a>{% endif %}
+          </p>
+          <p class="text-gray-700 text-sm mt-2 hidden" id="full-description-{{ item.id }}">
+            {{ item.description }}
+            <a href="javascript:void(0)" onclick="toggleDescription({{ item.id }})" class="text-blue-500" id="toggle-link-{{ item.id }}">See Less</a>
+          </p>
+        </div>
+
+        <!-- Edit and Delete Buttons -->
+        <div class="flex justify-around mt-4">
+          <button onclick="showEditForm({{ item.id }})" class="text-yellow-500 hover:text-yellow-600">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+
+          <!-- Delete Button -->
+          <form action="{% url 'deleteproduct' item.id %}" method="POST" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 flex items-center space-x-2 transition-colors duration-300">
+              <i class="fas fa-trash-alt"></i>
+              <span>Delete</span>
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-center text-gray-600 mt-8">No products available.</p>
+    {% endif %}
+  </section>
+
+  <!-- Edit Form (Initially hidden) -->
+  {% for item in product %}
+  <div id="edit-form-{{ item.id }}" class="absolute inset-0 bg-green-800 bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-4 rounded-lg shadow-lg w-full sm:w-80 max-w-xs">
+        <h3 class="text-green-600 text-2xl font-bold mb-2">Edit Product</h3>
+        <form method="POST" enctype="multipart/form-data" action="{% url 'editproduct' item.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ item.id }}">
+
+            <!-- Compact Fields -->
+            <div class="space-y-2">
+                <label for="productname" class="block text-gray-700 text-sm">Product Name:</label>
+                <input type="text" name="productname" value="{{ item.productname }}" class="w-full p-1 border rounded-md" required>
+
+                <label for="type" class="block text-gray-700 text-sm">Type:</label>
+                <input type="text" name="type" value="{{ item.type }}" class="w-full p-1 border rounded-md" required>
+
+                <label for="price" class="block text-gray-700 text-sm">Price:</label>
+                <input type="number" name="price" value="{{ item.price }}" class="w-full p-1 border rounded-md" required>
+
+                <label for="description" class="block text-gray-700 text-sm">Description:</label>
+                <textarea name="description" class="w-full p-1 border rounded-md" required>{{ item.description }}</textarea>
+
+                <label for="product_pic" class="block text-gray-700 text-sm">Product image:</label>
+                <input type="file" name="product_pic" class="w-full p-1 border rounded-md">
+
+                <div class="flex justify-between mt-4">
+                    <button type="submit" class="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600">Update</button>
+                    <button type="button" onclick="hideEditForm({{ item.id }})" class="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+  </div>
+  {% endfor %}
+
+  <script>
+  // Show the edit form when the Edit button is clicked
+  function showEditForm(productId) {
+    document.getElementById('edit-form-' + productId).classList.remove('hidden');
+  }
+
+  // Hide the edit form when Cancel button is clicked
+  function hideEditForm(productId) {
+    document.getElementById('edit-form-' + productId).classList.add('hidden');
+  }
+
+  // Toggle between the truncated and full description
+  function toggleDescription(productId) {
+    const truncatedDescription = document.getElementById('description-' + productId);
+    const fullDescription = document.getElementById('full-description-' + productId);
+    const toggleLink = document.getElementById('toggle-link-' + productId);
+
+    // Toggle visibility of description and the "See More" / "See Less" link
+    truncatedDescription.classList.toggle('hidden');
+    fullDescription.classList.toggle('hidden');
+
+    if (fullDescription.classList.contains('hidden')) {
+      toggleLink.textContent = 'See More'; // Change link text to "See More"
+    } else {
+      toggleLink.textContent = 'See Less'; // Change link text to "See Less"
+    }
+  }
+  </script>
+
+  <!-- Footer Section -->
+  <footer class="bg-gray-800 text-white py-6 text-center">
+    <p>&copy; 2024 Product Showcase | All Rights Reserved</p>
+  </footer>
+
+</body>
+
+</html>
